@@ -75,12 +75,12 @@ public class Search {
 
 	//  Read Parameter File
 		System.out.println("\nParameter File Name is: " + args[0] + "\n");
-		Parameters parmValues = new Parameters(args[0]);
-
+		Parameters parmValues = new Parameters("TravelingSalesman.params");
 	//  Write Parameters To Summary Output File
 		String summaryFileName = Parameters.expID + "_summary.txt";
 		FileWriter summaryOutput = new FileWriter(summaryFileName);
-		parmValues.outputParameters(summaryOutput);
+		Parameters.outputParameters(summaryOutput);
+
 
 	//	Set up Fitness Statistics matrix
 		fitnessStats = new double[2][Parameters.generations];
@@ -96,8 +96,8 @@ public class Search {
 		if (Parameters.problemType.equals("NM")){
 				problem = new NumberMatch();
 		}
-		else if (Parameters.problemType.equals("PS")){
-				problem = new PointScatter();
+		else if (Parameters.problemType.equals("TS")){
+				problem = new TravelingSalesman();
 		}
 		else System.out.println("Invalid Problem Type");
 
