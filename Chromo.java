@@ -77,8 +77,22 @@ public class Chromo
 		switch (Parameters.mutationType){
 
 		case 1:     
+			//Possibly set this to occur only once?
+			Random rand = new Random(); 
+			for(int l = 0; l < 48; l++)
+			{
+				double mut = rand.nextDouble();
+				if(mut < Parameters.mutationRate)
+				{
+					int swapIndex = rand.nextInt(48);
+					while (swapIndex == l)
+					{
+						swapIndex = rand.nextInt(48);
+					}
+					Collections.swap(chromosome, l, swapIndex);
+				}
+			}
 
-			
 			break;
 		case 2:
 
