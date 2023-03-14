@@ -77,7 +77,7 @@ public class Chromo
 		switch (Parameters.mutationType){
 
 		case 1:     
-			//Possibly set this to occur only once?
+			//Possibly set this to occur only once per generation?
 			Random rand = new Random(); 
 			for(int l = 0; l < 48; l++)
 			{
@@ -149,12 +149,43 @@ public class Chromo
 
 		switch (Parameters.xoverType){
 
-		case 1:     //  Single Point Crossover
+		case 1:     //  Cycle crossover
+
+			// Initalize cycle array
+			ArrayList<Integer> cycle = new ArrayList<Integer>();
 
 			//  Select crossover point
 			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
 
-			//  Create child chromosome from parental material
+			// Add point to ArrayLisy
+			cycle.add(xoverPoint1);
+
+
+			//  Set lists as not to mess with parents
+			child1.chromosome = parent1.chromosome;
+			child2.chromosome = parent2.chromosome;
+
+			// Get point from the same postition from other List
+			xoverPoint2 =  child2.chromosome.get(xoverPoint1);
+
+			// Get index of the above in child 1
+			xoverPoint1 = child1.chromosome.indexOf(xoverPoint2);
+
+			// Fill the cycle list
+			while(xoverPoint1 != cycle.get(0))
+			{
+				cycle.add(xoverPoint1);
+				xoverPoint2 = child2.chromosome.get(xoverPoint1);
+				xoverPoint1 = child1.chromosome.indexOf(xoverPoint2);
+			}
+			
+			//Swap the indexes
+			for(int i : cycle)
+			{
+				int hold = child1.chromosome.get(i);
+				child1.chromosome.set(i, child2.chromosome.get(i));
+				child2.chromosome.set(i, hold);
+			}
 			
 			break;
 
