@@ -281,7 +281,7 @@ public class Chromo
 
 				}
 			}
-			System.out.print("Parent1: ");
+			/*System.out.print("Parent1: ");
 			for(int i = 0; i<parent1.chromosome.size(); i++)
 			{
 				System.out.print(parent1.chromosome.get(i) + " ");
@@ -305,7 +305,7 @@ public class Chromo
 			{
 				System.out.print(child2.chromosome.get(i) + " ");
 			}
-			System.out.println();
+			System.out.println();*/
 			break;
 
 		case 3:     //  Uniform Crossover
