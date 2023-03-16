@@ -22,15 +22,24 @@ public class TravelingSalesman extends FitnessFunction {
 		name = "Traveling Salesman";
 	}
 
-    public static void doRawfitness(Chromo X)
+    public void doRawFitness(Chromo X)
+    {
+        X.rawFitness = run_all(X);
+    }
+
+    public double run_all(Chromo X){
+        return fitness(X);
+    }
+
+    public static double fitness(Chromo X)
     {
         
         // ArrayList<Double> distances_list = new ArrayList<Double>();
         // double distances_sum;
         double distances_sum = 0;
         double lat1 = 0;
-        double lon1 = 0;
         double lat2 = 0;
+        double lon1 = 0;
         double lon2 = 0;
         for (int i = 0; i <= 47; i++){
             
@@ -46,14 +55,10 @@ public class TravelingSalesman extends FitnessFunction {
                 lat2 = lat_array.get(X.chromosome.get(0));
                 lon2 = long_array.get(X.chromosome.get(0));
             }
-            distances_sum += distance(lat1, lon1, lat2, lon2); 
+            distances_sum += distance(lat1, lat2, lon1, lon2); 
 
         }
-        //return(distances_sum);
-
-        X.rawFitness = distances_sum;
-    
-
+        return(distances_sum);
     }
 
     public static double distance(double lat1, double lat2, double lon1, double lon2){
