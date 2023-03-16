@@ -13,6 +13,22 @@ public class PointScatter extends FitnessFunction{
 *                            INSTANCE VARIABLES                                *
 *******************************************************************************/
 
+ArrayList<Double> lat_array = new ArrayList<>(Arrays.asList(33.209438, 36.068681, 32.23564, 34.07088, 40.00694, 41.82176, 39.68103, 29.63288, 
+    33.94043, 46.7238, 40.09912, 39.18024, 41.66831, 38.95349, 38.02704, 30.21929, 
+    44.89914, 38.99041, 42.38694, 42.29421, 44.97101, 34.36461, 38.93641, 46.85461, 
+    40.82068, 39.54427, 43.13827, 40.74213, 35.08663, 40.90988, 35.90504, 47.92654, 
+    39.323, 35.19599, 44.04455, 39.94934, 41.4873, 33.99288, 42.79137, 35.95164, 
+    30.28522, 40.76281, 44.47374, 38.04106, 47.65435, 39.65369, 43.08027, 41.31423));
+
+ArrayList<Double> long_array = new ArrayList<>(Arrays.asList(-87.54149, -94.17601, -110.95174, -118.44685, -105.26639, -72.24278, -75.75402, 
+    -82.34901, -83.37305, -117.02044, -88.23852, -86.50935, -91.57953, -95.26309, 
+    -84.50484, -92.04138, -68.66637, -76.94386, -72.52991, -83.71004, -93.23144, 
+    -89.53963, -92.3297, -113.9655, -96.70048, -119.8163, -70.93238, -74.17903, 
+    -106.6202, -73.12155, -79.04775, -97.07212, -82.10268, -97.44571, -123.0717, 
+    -75.18964, -71.53446, -81.02675, -96.92542, -83.93088, -97.73389, -111.8368, 
+    -73.19415, -78.5055, -122.308, -79.95745, -89.43096, -105.5643));
+
+
 
 /*******************************************************************************
 *                            STATIC VARIABLES                                  *
@@ -40,101 +56,81 @@ public class PointScatter extends FitnessFunction{
     // run all function:
     
     public double run_all(Chromo X){
-        return permut_and_min(chromo_to_polar(X));
+        return fitness(X);
     }
 
-    public ArrayList<Double> chromo_to_polar(Chromo X){
-        ArrayList<Double> polar_list = new ArrayList<Double>();
-        String gene = new String("");
-        String gene_left = new String("");
-        String gene_right = new String("");
-        int geneSize = Parameters.geneSize;
-        int numGenes = Parameters.numGenes;
-        for (int z = 0; z < numGenes; z++) {
-            gene = X.chromo.substring(z * geneSize, z * geneSize + geneSize);
-            gene_left = gene.substring(0, gene.length() / 2);
-            gene_right = gene.substring(gene.length() / 2);
-            double gene_radius = binary_to_radius(gene_left);
-            double gene_angle = binary_to_angle(gene_right);
-            polar_list.add(gene_radius);
-            polar_list.add(gene_angle);
-        }
-        return polar_list;
-    }
-    
-    public double permut_and_min(ArrayList<Double> polar_list){
-        // first step is to do the permutations:
-        ArrayList<Double> dist_permuts = new ArrayList<Double>();
-        for (int i = 0; i < polar_list.size(); i++) {
-            for (int j = i + 2; j < polar_list.size() -1; j++) {
-                double radius1 = polar_list.get(i).doubleValue();
-                double angle1 = polar_list.get(i + 1).doubleValue();
-                double radius2 = polar_list.get(j).doubleValue();
-                double angle2 = polar_list.get(j + 1).doubleValue();
-
-                // double new_radius1 = radius1.doubleValue();
-                // double new_angle1 = angle1.doubleValue();
-                // double new_radius2 = radius2.doubleValue();
-                // double new_angle2 = angle2.doubleValue();
-                double the_distance = distance(radius1, angle1, radius2, angle2);
-                dist_permuts.add(the_distance);
-            }
-        }
-        double minimum = Collections.min(dist_permuts);
-        return minimum;
-    }
-    
-
-    
-    public double binary_to_radius(String gene_left){
-        double a_left_int = Integer.parseInt(gene_left, 2);
-        double num = 1023.0f;
-        double radius = a_left_int / num;
-        radius = radius * 1000000.0;
-        radius = Math.floor(radius);
-        radius = radius / 1000000.0;
-        return radius;  
-        }
-
-    public double binary_to_angle(String gene_right){
-        double a_right_int = Integer.parseInt(gene_right, 2);
-        double num = 1023.0f;
-        double angle = a_right_int / num;
-        angle = angle * 10000.0;
-        angle = Math.floor(angle);
-        angle = angle / 10000.0;
-        angle = angle * 360.0;
-        return angle;
-    }
-        
-    public double distance(double radius_1, double angle_1, double radius_2, double angle_2){
+    public double distance(double lat1, double lat2, double lon1, double lon2){
         // convert to radians
-        angle_1 = angle_1 * 3.1415926535 / 180.0;
-        angle_2 = angle_2 * 3.1415926535 / 180.0;
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
         // distance
-        double left_part = Math.pow(radius_1, 2) + Math.pow(radius_2, 2);
-        double right_part = 2 * radius_1 * radius_2 * Math.cos(angle_1 - angle_2); 
-        double prelim_dist = left_part - right_part;
-        double distance = Math.sqrt(prelim_dist);
-        return distance;
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dlon / 2),2);
+                
+        double c = 2 * Math.asin(Math.sqrt(a));
+    
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+    
+        // calculate the result
+        return(c * r);
     }
+ 
+    public double fitness(Chromo X){
+        // ArrayList<Integer> chromosome = new ArrayList<Integer>();
+        // Random rand = new Random(); 
+        // int upperbound = 48;
+            
+        // while (chromosome.size() < 48){
+            // int int_random = rand.nextInt(upperbound);
+            // if (chromosome.contains(int_random)) {
+                // continue;
+            // }else {
+                // chromosome.add(int_random);
+            // }
+
+        // }
+        // ArrayList<Double> distances_list = new ArrayList<Double>();
+        // double distances_sum;
+        double distances_sum = 0;
+        double lat1 = 0;
+        double lon1 = 0;
+        double lat2 = 0;
+        double lon2 = 0;
+        for (int z = 0; z < 48; z++){
+                
+            if (z != 47) {
+
+                lat1 = lat_array.get(X.chromo.get(z));
+                lon1 = long_array.get(X.chromo.get(z));
+                lat2 = lat_array.get(X.chromo.get(z + 1));
+                lon2 = long_array.get(X.chromo.get(z + 1));
+            } else {
+                lat1 = lat_array.get(X.chromo.get(z));
+                lon1 = long_array.get(X.chromo.get(z));
+                lat2 = lat_array.get(X.chromo.get(0));
+                lon2 = long_array.get(X.chromo.get(0));
+            }
+            distances_sum += distance(lat1, lat2, lon1, lon2); 
+            // System.out.println("size equals:  " + i);
+
+        }
+    
+        return(distances_sum);
+    }
+
+ 
 
 //  PRINT OUT AN INDIVIDUAL GENE TO THE SUMMARY FILE *********************************
 
-	public void doPrintGenes(Chromo X, FileWriter output) throws java.io.IOException{
-
-		for (int i=0; i<Parameters.numGenes; i++){
-			Hwrite.right(X.getGeneAlpha(i),11,output);
-		}
-		output.write("   RawFitness");
-		output.write("\n        ");
-		for (int i=0; i<Parameters.numGenes; i++){
-			Hwrite.right(X.getPosIntGeneValue(i),11,output);
-		}
-		Hwrite.right((int) X.rawFitness,13,output);
-		output.write("\n\n");
-		return;
-	}
+	
 
 /*******************************************************************************
 *                             STATIC METHODS                                   *

@@ -75,12 +75,12 @@ public class Search {
 
 	//  Read Parameter File
 		System.out.println("\nParameter File Name is: " + args[0] + "\n");
-		Parameters parmValues = new Parameters("TravelingSalesman.params");
+		Parameters parmValues = new Parameters(args[0]);
+
 	//  Write Parameters To Summary Output File
 		String summaryFileName = Parameters.expID + "_summary.txt";
 		FileWriter summaryOutput = new FileWriter(summaryFileName);
-		Parameters.outputParameters(summaryOutput);
-
+		parmValues.outputParameters(summaryOutput);
 
 	//	Set up Fitness Statistics matrix
 		fitnessStats = new double[2][Parameters.generations];
@@ -93,11 +93,8 @@ public class Search {
 	//	the appropriate class file (extending FitnessFunction.java) and add
 	//	an else_if block below to instantiate the problem.
  
-		if (Parameters.problemType.equals("NM")){
-				problem = new NumberMatch();
-		}
-		else if (Parameters.problemType.equals("TS")){
-				problem = new TravelingSalesman();
+		if (Parameters.problemType.equals("PS")){
+				problem = new PointScatter();
 		}
 		else System.out.println("Invalid Problem Type");
 
@@ -178,16 +175,20 @@ public class Search {
 					else {
 						if (member[i].rawFitness < bestOfGenChromo.rawFitness){
 							Chromo.copyB2A(bestOfGenChromo, member[i]);
+							// System.out.println("Search, line 178 " + member[i].chromo.size());
 							bestOfGenR = R;
 							bestOfGenG = G;
 						}
 						if (member[i].rawFitness < bestOfRunChromo.rawFitness){
 							Chromo.copyB2A(bestOfRunChromo, member[i]);
+							// System.out.println("Search, line 178 " + member[i].chromo.size());
 							bestOfRunR = R;
 							bestOfRunG = G;
 						}
 						if (member[i].rawFitness < bestOverAllChromo.rawFitness){
 							Chromo.copyB2A(bestOverAllChromo, member[i]);
+							// System.out.println("Search, line 178 " + member[i].chromo.size());
+							// System.out.println("Search, line 178 " + bestOverAllChromo);
 							bestOverAllR = R;
 							bestOverAllG = G;
 						}
@@ -325,22 +326,60 @@ public class Search {
 					parent2 = parent1;
 					while (parent2 == parent1){
 						parent2 = Chromo.selectParent();
+						// System.out.println("Line 325, Here's the chromo : " + parent2);
 					}
 
 					//	Crossover Two Parents to Create Two Children
 					randnum = r.nextDouble();
 					if (randnum < Parameters.xoverRate){
+
+						if ((member[parent1].chromo.size() != 48) || (member[parent2].chromo.size() != 48)) {
+							System.out.println("search line 337 : " + member[parent1].chromo.size());
+							System.out.println("search line 338 : " + member[parent2].chromo.size());
+						}
+						
 						Chromo.mateParents(parent1, parent2, member[parent1], member[parent2], child[i], child[i+1]);
+
+
+						if ((child[i].chromo.size() != 48) || (child[i + 1].chromo.size() != 48)) {
+							System.out.println("search line 340 : " + child[i].chromo.size());
+							System.out.println("search line 341 : " + child[i + 1].chromo.size());
+						}
+
+
+
+						// System.out.println(Chromo.mateParents(parent1, parent2, member[parent1], member[parent2], child[i], child[i+1]));
+						// System.out.println("Line 332 : " + parent1 + member[parent2]);
+						// System.out.println("Search, line 338, mateParents : " + i + " " + child[i].chromo.size());
+						// System.out.println("Search, line 338, mateParents : " + i + 1 + " " + child[i + 1].chromo.size());
 					}
 					else {
 						Chromo.mateParents(parent1, member[parent1], child[i]);
 						Chromo.mateParents(parent2, member[parent2], child[i+1]);
+
+						if ((child[i].chromo.size() != 48) || (child[i + 1].chromo.size() != 48)) {
+							System.out.println("search line 356 : " + child[i].chromo.size());
+							System.out.println("search line 357 : " + child[i + 1].chromo.size());
+						}
+						// System.out.println("Search, line 338, mateParents : " + parent1 + " " + member[parent1].chromo.size());
+						// System.out.println("Search, line 338, mateParents : " + parent2 + " " + member[parent2].chromo.size());
+						// System.out.println("Search, line 338, mateParents : " + i + " " + child[i].chromo.size());
+						// System.out.println("Search, line 338, mateParents : " + i + 1 + " " + child[i + 1].chromo.size());
+						// System.out.println("Line 336 : " + member[parent2]);
+						// System.out.println("Line 337 : " + child[i]);
 					}
 				} // End Crossover
 
 				//	Mutate Children
-				for (int i=0; i<Parameters.popSize; i++){
-					child[i].doMutation();
+				for (int i=0; i<Parameters.popSize; i++){ // i<Parameters.popSize
+					// System.out.println("Search line 345, child[i] size : "+ " for i equals : " + i + "          " + child[i].chromo.size());
+					if (child[i].chromo.size() != 48) {
+						System.out.println("search line 372 : " + child[i].chromo.size());
+					}
+					Chromo.doMutation(child[i].chromo);
+					if (child[i].chromo.size() != 48) {
+						System.out.println("search line 376 : " + child[i].chromo.size());
+					}
 				}
 
 				//	Swap Children with Last Generation

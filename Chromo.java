@@ -7,32 +7,20 @@ import java.io.*;
 import java.util.*;
 import java.text.*;
 
+
 public class Chromo
 {
 /*******************************************************************************
 *                            INSTANCE VARIABLES                                *
 *******************************************************************************/
 
-	ArrayList<Integer> chromosome = new ArrayList<Integer>();
+	// public String chromo;
+	// make chromo below a static variable? 
+	public ArrayList<Integer> chromo;
+	public static ArrayList<Integer> crossover_indices = new ArrayList<Integer>(Arrays.asList(29, 30, 31, 32, 33, 39, 40, 41, 42, 43));
 	public double rawFitness;
 	public double sclFitness;
 	public double proFitness;
-
-	static ArrayList<Double> lat_array = new ArrayList<>(Arrays.asList(33.209438, 36.068681, 32.23564, 34.07088, 40.00694, 41.82176, 39.68103, 29.63288, 
-    33.94043, 46.7238, 40.09912, 39.18024, 41.66831, 38.95349, 38.02704, 30.21929, 
-    44.89914, 38.99041, 42.38694, 42.29421, 44.97101, 34.36461, 38.93641, 46.85461, 
-    40.82068, 39.54427, 43.13827, 40.74213, 35.08663, 40.90988, 35.90504, 47.92654, 
-    39.323, 35.19599, 44.04455, 39.94934, 41.4873, 33.99288, 42.79137, 35.95164, 
-    30.28522, 40.76281, 44.47374, 38.04106, 47.65435, 39.65369, 43.08027, 41.31423));
-
-    static ArrayList<Double> long_array = new ArrayList<>(Arrays.asList(-87.54149, -94.17601, -110.95174, -118.44685, -105.26639, -72.24278, -75.75402, 
-    -82.34901, -83.37305, -117.02044, -88.23852, -86.50935, -91.57953, -95.26309, 
-    -84.50484, -92.04138, -68.66637, -76.94386, -72.52991, -83.71004, -93.23144, 
-    -89.53963, -92.3297, -113.9655, -96.70048, -119.8163, -70.93238, -74.17903, 
-    -106.6202, -73.12155, -79.04775, -97.07212, -82.10268, -97.44571, -123.0717, 
-    -75.18964, -71.53446, -81.02675, -96.92542, -83.93088, -97.73389, -111.8368, 
-    -73.19415, -78.5055, -122.308, -79.95745, -89.43096, -105.5643));
-
 
 /*******************************************************************************
 *                            INSTANCE VARIABLES                                *
@@ -45,24 +33,39 @@ public class Chromo
 *******************************************************************************/
 
 	public Chromo(){
-		
 		//  Set gene values to a randum sequence of 1's and 0's
-		Random rand = new Random(); 
+		chromo = new ArrayList<Integer>();
+        Random rand = new Random(); 
         int upperbound = 48;
         
-        while (chromosome.size() < 48){
+        while (chromo.size() < 48){
             int int_random = rand.nextInt(upperbound);
-            if (chromosome.contains(int_random)) {
+            if (chromo.contains(int_random)) {
                 continue;
-            } else{
-                chromosome.add(int_random);
+            }else {
+                chromo.add(int_random);
             }
-
         }
+		if (this.chromo.size() < 48) {
+				System.out.println("Line 56 : Chromo size is:  " + this.chromo.size());
+				System.out.println("The chromo is:  " + this.chromo);
+		}
+		if (this.chromo.size() == 48){
+			this.chromo = chromo;
+		} else {
+			System.out.println("Line 56 : Error in chromosome size, size is :  " + this.chromo.size());
+		}
 
 		this.rawFitness = -1;   //  Fitness not yet evaluated
 		this.sclFitness = -1;   //  Fitness not yet scaled
 		this.proFitness = -1;   //  Fitness not yet proportionalized
+
+		if (this.chromo.size() < 48) {
+				System.out.println("Line 56 : Chromo size is:  " + this.chromo.size());
+				System.out.println("The chromo is:  " + this.chromo);
+		}
+
+		// return (chromo);
 	}
 
 
@@ -72,23 +75,77 @@ public class Chromo
 
 	//  Mutate a Chromosome Based on Mutation Type *****************************
 
-	public void doMutation(){
+	public static ArrayList<Integer> doMutation(ArrayList<Integer> variable_thousand){
 
-		switch (Parameters.mutationType){
+		
 
-		case 1:     
+		// switch (Parameters.mutationType){
+
+		// case 1:     // Displacement Mutation:
+			// ArrayList<Integer> chromo_backup = variable_thousand;
+			ArrayList<Integer> chromo_copy = variable_thousand;
+
+			ArrayList<Integer> first_ten = new ArrayList<Integer>();
+			for (int i = 0; i < 10; i++) {
+				first_ten.add(chromo_copy.get(i));
+				
+			}
+			if (first_ten.size() != 10) {
+				System.out.println("first ten : " + first_ten.size());
+			}
+
+			ArrayList<Integer> second_ten = new ArrayList<Integer>();
+			for (int i = 10; i < 20; i++) {
+		
+				second_ten.add(chromo_copy.get(i));
+				
+			}
+			if (second_ten.size() != 10) {
+				System.out.println("second ten : " + second_ten.size());
+			}
+
+			ArrayList<Integer> third_ten = new ArrayList<Integer>();
+			for (int i = 20; i < 30; i++) {
+				
+				third_ten.add(chromo_copy.get(i));
+				
+			}
+			if (third_ten.size() != 10) {
+				System.out.println("third ten : " + third_ten.size());
+			}
+
+			ArrayList<Integer> last = new ArrayList<Integer>();
+			for (int i = 30; i < 48; i++) {
+				
+				last.add(chromo_copy.get(i));
+				
+			}
+			if (last.size() != 18) {
+				System.out.println("chromo line 117: last " + last.size());
+			}
 
 			
-			break;
-		case 2:
+			
+			
 
-			break;
-		case 3:
-		
-			break;
-		default:
-			System.out.println("ERROR - No mutation method selected");
-		}
+			ArrayList<Integer> new_chromo = new ArrayList<Integer>();
+			new_chromo.addAll(first_ten);
+			new_chromo.addAll(third_ten);
+			new_chromo.addAll(second_ten);
+			new_chromo.addAll(last);
+
+			if (new_chromo.size() != 48){
+				System.out.println("chromo line 138, " + new_chromo.size());
+			}
+			return(new_chromo);
+
+			
+			
+			// break;
+
+		// default:
+			// System.out.println("ERROR - No mutation method selected");
+		// }
 	}
 
 /*******************************************************************************
@@ -130,17 +187,142 @@ public class Chromo
 
 	public static void mateParents(int pnum1, int pnum2, Chromo parent1, Chromo parent2, Chromo child1, Chromo child2){
 
-		int xoverPoint1;
-		int xoverPoint2;
-
 		switch (Parameters.xoverType){
 
 		case 1:     //  Single Point Crossover
+			// System.out.println("chromo line 215, parent1 size : " + parent1.chromo.size());
+			// System.out.println("chromo line 216, parent2 size : " + parent2.chromo.size());
+/*
+			if (this.chromo.size() < 48) {
+				System.out.println("Line 206 : Chromo size is:  " + this.chromo.size());
+				System.out.println("The chromo is:  " + this.chromo);
+			}
+*/
 
-			//  Select crossover point
-			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+			// first doing child_from_par_2:
+			ArrayList<Integer> child_from_par_2 = new ArrayList<Integer>();
+			// System.out.println(iterator.nextIndex());
+			// while (iterator.hasNext()) {
+			//    System.out.println(iterator.next());
+			// }
+			ArrayList<Integer> parent_2_at_indices = new ArrayList<Integer>();
+			for (int i = 0; i < 10; i++) {
+				parent_2_at_indices.add(parent2.chromo.get(crossover_indices.get(i)));
+			}
+			
+			ArrayList<Integer> parent_1_not_in_crossover = new ArrayList<Integer>();
 
-			//  Create child chromosome from parental material
+			for (int p = 0; p < 48; p++) {
+				if (!(parent_2_at_indices.contains(parent1.chromo.get(p)))) {
+					parent_1_not_in_crossover.add(parent1.chromo.get(p));
+				}
+			}
+			// System.out.println(parent_1_not_in_crossover);
+
+			ListIterator<Integer> iterator = parent_1_not_in_crossover.listIterator();
+			
+			while (child_from_par_2.size() < 29) {
+				
+				child_from_par_2.add(iterator.next());
+				
+
+			}
+/*
+			if (this.chromo.size() < 48) {
+				System.out.println("Line 241 : Chromo size is:  " + this.chromo.size());
+				System.out.println("The chromo is:  " + this.chromo);
+			}
+*/
+			for (int i = 0; i < 5; i++) {
+				child_from_par_2.add(parent_2_at_indices.get(i));
+			}
+
+			while (child_from_par_2.size() < 39) {
+				child_from_par_2.add(iterator.next());
+			}
+
+			for (int i = 0; i < 5; i++) {
+				child_from_par_2.add(parent_2_at_indices.get(i));
+			}
+
+			// System.out.println("chromo line 366, child_from_par_1 size : " + child_from_par_1.size());
+			// System.out.println("chromo line 271, child_from_par_2 size : " + child_from_par_2.size());
+
+			while ((child_from_par_2.size() < 48) && (iterator.hasNext())) {
+				int hello = iterator.next();
+				// System.out.println("On line 223, ch from par 2:  ");
+				// int i = 0;
+				// while(iterator.hasNext()) {
+    				// i++;
+    				// iterator.next();
+				// }
+				// System.out.println(i);
+				child_from_par_2.add(hello);
+				// System.out.println("On line 225, ch from par 2:  ");
+			}
+
+			// System.out.println(child_from_par_2.size());
+				
+
+			// now doing child_from_par_1:
+
+			ArrayList<Integer> child_from_par_1 = new ArrayList<Integer>();
+			// System.out.println(iterator.nextIndex());
+			// while (iterator.hasNext()) {
+			//    System.out.println(iterator.next());
+			// }
+			ArrayList<Integer> parent_1_at_indices = new ArrayList<Integer>();
+			for (int i = 0; i < 10; i++) {
+				parent_1_at_indices.add(parent1.chromo.get(crossover_indices.get(i)));
+			}
+			
+			ArrayList<Integer> parent_2_not_in_crossover = new ArrayList<Integer>();
+
+			for (int p = 0; p < 48; p++) {
+				if (!(parent_1_at_indices.contains(parent2.chromo.get(p)))) {
+					parent_2_not_in_crossover.add(parent2.chromo.get(p));
+					// System.out.println("chromo line 306 : " + parent_2_not_in_crossover.size());
+				}
+			}
+			// System.out.println(parent_2_not_in_crossover);
+
+			ListIterator<Integer> second_iterator = parent_2_not_in_crossover.listIterator();
+			
+			while (child_from_par_1.size() < 29) {
+				
+				child_from_par_1.add(second_iterator.next());
+				
+
+			}
+
+			for (int i = 0; i < 5; i++) {
+				child_from_par_1.add(parent_1_at_indices.get(i));
+			}
+
+			while (child_from_par_1.size() < 39) {
+				child_from_par_1.add(second_iterator.next());
+				
+			}
+
+			for (int i = 0; i < 5; i++) {
+				child_from_par_1.add(parent_1_at_indices.get(i));
+			}
+			// System.out.println("chromo line 332, child_from_par_1 size : " + child_from_par_1.size());
+			// System.out.println("chromo line 333, child_from_par_2 size : " + child_from_par_2.size());
+
+			while ((child_from_par_1.size() < 48) && (second_iterator.hasNext())) {
+				int hello_two = second_iterator.next();
+				
+				child_from_par_1.add(hello_two);
+			}
+
+			// System.out.println("chromo line 369, parent1 size : " + parent1.chromo.size());
+			// System.out.println("chromo line 370, parent2 size : " + parent2.chromo.size());
+			System.out.println("chromo line 287, child_from_par_1 size : " + child_from_par_1.size());
+			System.out.println("chromo line 288, child_from_par_2 size : " + child_from_par_2.size() + "\n");
+
+			child1.chromo = child_from_par_1;
+			child2.chromo = child_from_par_2;
 			
 			break;
 
@@ -166,7 +348,7 @@ public class Chromo
 	public static void mateParents(int pnum, Chromo parent, Chromo child){
 
 		//  Create child chromosome from parental material
-		child.chromosome = parent.chromosome;
+		child.chromo = parent.chromo;
 
 		//  Set fitness values back to zero
 		child.rawFitness = -1;   //  Fitness not yet evaluated
@@ -177,12 +359,24 @@ public class Chromo
 	//  Copy one chromosome to another  ***************************************
 
 	public static void copyB2A (Chromo targetA, Chromo sourceB){
-
-		targetA.chromosome = sourceB.chromosome;
+/*
+		if (this.chromo.size() < 48) {
+			System.out.println("Line 390 : Chromo size is:  " + this.chromo.size());
+			System.out.println("The chromo is:  " + this.chromo);
+		}
+*/
+		targetA.chromo = sourceB.chromo;
 
 		targetA.rawFitness = sourceB.rawFitness;
 		targetA.sclFitness = sourceB.sclFitness;
 		targetA.proFitness = sourceB.proFitness;
+/*
+		if (this.chromo.size() < 48) {
+			System.out.println("Line 401 : Chromo size is:  " + this.chromo.size());
+			System.out.println("The chromo is:  " + this.chromo);
+		}
+*/
 		return;
 	}
+
 }   // End of Chromo.java ******************************************************
