@@ -93,10 +93,10 @@ public class Search {
 	//	the appropriate class file (extending FitnessFunction.java) and add
 	//	an else_if block below to instantiate the problem.
  
-		if (Parameters.problemType.equals("NM")){
+		/*if (Parameters.problemType.equals("NM")){
 				problem = new NumberMatch();
-		}
-		else if (Parameters.problemType.equals("TS")){
+		}*/
+		if (Parameters.problemType.equals("TS")){
 				problem = new TravelingSalesman();
 		}
 		else System.out.println("Invalid Problem Type");

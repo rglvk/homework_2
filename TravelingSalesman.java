@@ -22,7 +22,16 @@ public class TravelingSalesman extends FitnessFunction {
 		name = "Traveling Salesman";
 	}
 
-    public static void doRawfitness(Chromo X)
+    public void doRawFitness(Chromo X)
+    {
+        X.rawFitness = run_all(X);
+    }
+
+    public double run_all(Chromo X){
+        return fitness(X);
+    }
+
+    public static double fitness(Chromo X)
     {
         
         // ArrayList<Double> distances_list = new ArrayList<Double>();
@@ -46,30 +55,27 @@ public class TravelingSalesman extends FitnessFunction {
                 lat2 = lat_array.get(X.chromosome.get(0));
                 lon2 = long_array.get(X.chromosome.get(0));
             }
-            distances_sum += distance(lat1, lon1, lat2, lon2); 
+            distances_sum += distance(lat1, lat2, lon1, lon2); 
 
         }
-        //return(distances_sum);
 
-        X.rawFitness = distances_sum;
+        return(distances_sum);
     
 
     }
 
     public static double distance(double lat1, double lat2, double lon1, double lon2){
         // convert to radians
-        lon1 = Math.toRadians(lon1);
-        lon2 = Math.toRadians(lon2);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
+        double nlon1 = Math.toRadians(lon1);
+        double nlon2 = Math.toRadians(lon2);
+        double nlat1 = Math.toRadians(lat1);
+        double nlat2 = Math.toRadians(lat2);
         // distance
         // Haversine formula
-        double dlon = lon2 - lon1;
-        double dlat = lat2 - lat1;
-        double a = Math.pow(Math.sin(dlat / 2), 2)
-                + Math.cos(lat1) * Math.cos(lat2)
-                * Math.pow(Math.sin(dlon / 2),2);
-            
+        double dlon = nlon2 - nlon1;
+        double dlat = nlat2 - nlat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(nlat1) * Math.cos(nlat2) * Math.pow(Math.sin(dlon / 2),2);
+    
         double c = 2 * Math.asin(Math.sqrt(a));
 
         // Radius of earth in kilometers. Use 3956
@@ -77,21 +83,23 @@ public class TravelingSalesman extends FitnessFunction {
         double r = 6371;
 
         // calculate the result
+        //System.out.println("Distance between " + lat1 + " " + lon1 + " and " + lat2 + " " + lon2 + " is: " + c*r);
         return(c * r);
     }
 
-    public void doPrintGenes(Chromo X, FileWriter output) throws java.io.IOException{
-        for (int p = 0; p < X.chromosome.size(); p++){
-            if (p % 2 == 0 && X.chromosome.get(p) > 10)
-                System.out.println("Failed");
-        }
-        for (int i=0; i < X.chromosome.size(); i++){
-			Hwrite.right(X.chromosome.get(i),11,output);
+    /*public void doPrintGenes(Chromo X, FileWriter output) throws java.io.IOException{
+
+		for (int i=0; i<Parameters.numGenes; i++){
+			Hwrite.right(X.getGeneAlpha(i),11,output);
 		}
 		output.write("   RawFitness");
 		output.write("\n        ");
+		for (int i=0; i<Parameters.numGenes; i++){
+			Hwrite.right(X.getPosIntGeneValue(i),11,output);
+		}
 		Hwrite.right((int) X.rawFitness,13,output);
 		output.write("\n\n");
 		return;
-    }
+	}*/
+
 }

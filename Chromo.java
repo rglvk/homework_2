@@ -59,7 +59,11 @@ public class Chromo
             }
 
         }
-
+		/*for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}*/
+		//System.out.println();
 		this.rawFitness = -1;   //  Fitness not yet evaluated
 		this.sclFitness = -1;   //  Fitness not yet scaled
 		this.proFitness = -1;   //  Fitness not yet proportionalized
@@ -78,7 +82,7 @@ public class Chromo
 
 		case 1:     
 			//Possibly set this to occur only once per generation?
-			Random rand = new Random(); 
+			Random rand = new Random();
 			for(int l = 0; l < 48; l++)
 			{
 				double mut = rand.nextDouble();
@@ -147,6 +151,8 @@ public class Chromo
 		int xoverPoint1;
 		int xoverPoint2;
 
+		//System.out.println("Doing crossover");
+
 		switch (Parameters.xoverType){
 
 		case 1:     //  Cycle crossover
@@ -162,8 +168,14 @@ public class Chromo
 
 
 			//  Set lists as not to mess with parents
-			child1.chromosome = parent1.chromosome;
-			child2.chromosome = parent2.chromosome;
+			for(int i = 0; i<parent1.chromosome.size(); i++)
+			{
+				int p1 = parent1.chromosome.get(i);
+				int p2 = parent2.chromosome.get(i);
+				child1.chromosome.set(i,p1);
+				child2.chromosome.set(i,p2);
+			}
+			
 
 			// Get point from the same postition from other List
 			xoverPoint2 =  child2.chromosome.get(xoverPoint1);
@@ -189,12 +201,117 @@ public class Chromo
 			
 			break;
 
-		case 2:     //  Two Point Crossover
+		case 2:		//  PMX
+
+			// arrays to store mappings
+			int[] map1 = new int[48];
+			int[] map2 = new int[48];
+			Arrays.fill(map1, -1);
+			Arrays.fill(map2, -1);
+
+			//  Select crossover point
+			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+			//xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+			if(xoverPoint1 < 45)
+				xoverPoint2 = xoverPoint1 + 3;
+			else
+			{
+				xoverPoint1 = xoverPoint1 - 3;
+				xoverPoint2 = xoverPoint1 + 3;
+			}
+
+			for(int i = 0; i<parent1.chromosome.size(); i++)
+			{
+				int p1 = parent1.chromosome.get(i);
+				int p2 = parent2.chromosome.get(i);
+				child1.chromosome.set(i,p1);
+				child2.chromosome.set(i,p2);
+			}
+
+			// ensures unique points and that point 1 occurs before point 2
+			if (xoverPoint1 == xoverPoint2)
+			{
+				xoverPoint2 = 48-1;
+			}
+			else if (xoverPoint2 < xoverPoint1)
+			{
+				int temp = xoverPoint1;
+				xoverPoint1 = xoverPoint2;
+				xoverPoint2 = temp;
+			}
+			System.out.println("Points: " + xoverPoint1 + " " + xoverPoint2);
+			// swap of xcrossover site
+			for (int i = xoverPoint1; i <= xoverPoint2; i++)
+			{
+				//System.out.println("Swapping " + child1.chromosome.get(i) + " " + child2.chromosome.get(i));
+				child1.chromosome.set(i, parent2.chromosome.get(i));
+				child2.chromosome.set(i, parent1.chromosome.get(i));
+				/*int hold = child1.chromosome.get(i);
+				System.out.println("Before " + child1.chromosome.get(i));
+				child1.chromosome.set(i, child2.chromosome.get(i));
+				System.out.println("After " + child1.chromosome.get(i));
+				child2.chromosome.set(i, hold);*/
+			}
+
+			//mapping
+			for (int i = 0; i < 48; i++)
+			{
+				if (i < xoverPoint1 || i > xoverPoint2)
+				{
+					int n1 = parent1.chromosome.get(i);
+					int m1 = map1[n1];
+
+					int n2 = parent2.chromosome.get(i);
+					int m2 = map2[n2];
+
+					while (m1 != -1) {
+						n1 = m1;
+						m1 = map1[m1];
+					}
+
+					while (m2 != -1) {
+						n2 = m2;
+						m2 = map2[m2];
+					}
+					
+					//System.out.println("Before: " + child1.chromosome.get(i));
+					child1.chromosome.set(i,n1);
+					//System.out.println("After: " + child1.chromosome.get(i));
+					child2.chromosome.set(i,n2);
+
+				}
+			}
+			System.out.print("Parent1: ");
+			for(int i = 0; i<parent1.chromosome.size(); i++)
+			{
+				System.out.print(parent1.chromosome.get(i) + " ");
+			}
+			System.out.println();
+			System.out.print("Parent2: ");
+			for(int i = 0; i<child1.chromosome.size(); i++)
+			{
+				System.out.print(parent2.chromosome.get(i) + " ");
+			}
+			System.out.println("\n");
+			System.out.print("Child1: ");
+			for(int i = 0; i<child1.chromosome.size(); i++)
+			{
+				System.out.print(child1.chromosome.get(i) + " ");
+			}
+			System.out.println();
+			
+			System.out.print("Child2: ");
+			for(int i = 0; i<child2.chromosome.size(); i++)
+			{
+				System.out.print(child2.chromosome.get(i) + " ");
+			}
+			System.out.println();
+			break;
 
 		case 3:     //  Uniform Crossover
 
 		default:
-			System.out.println("ERROR - Bad crossover method selected");
+			System.out.println("ERROR - Bad crossover method selected: " + Parameters.xoverType);
 		}
 
 		//  Set fitness values back to zero
