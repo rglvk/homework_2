@@ -93,8 +93,8 @@ public class Search {
 	//	the appropriate class file (extending FitnessFunction.java) and add
 	//	an else_if block below to instantiate the problem.
  
-		if (Parameters.problemType.equals("PS")){
-				problem = new PointScatter();
+		if (Parameters.problemType.equals("TS")){
+				problem = new TravelingSalesman();
 		}
 		else System.out.println("Invalid Problem Type");
 
@@ -376,7 +376,7 @@ public class Search {
 					if (child[i].chromo.size() != 48) {
 						System.out.println("search line 372 : " + child[i].chromo.size());
 					}
-					Chromo.doMutation(child[i].chromo);
+					child[i].doMutation(); // Chromo.doMutation(child[i].chromo);
 					if (child[i].chromo.size() != 48) {
 						System.out.println("search line 376 : " + child[i].chromo.size());
 					}
