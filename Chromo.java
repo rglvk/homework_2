@@ -100,8 +100,12 @@ public class Chromo
 
 			break;
 		case 2:
-		
-			
+			/*System.out.print("Before mutation: ");
+			for(int i = 0; i < chromosome.size(); i++)
+			{
+				System.out.print(chromosome.get(i) + " ");
+			}
+			System.out.println();*/
 			int xoverPoint1;
 			int xoverPoint2;
 			//  Select the mutation points
@@ -142,10 +146,23 @@ public class Chromo
                 chromosome.set(i,temp);
             }
 
+			/*System.out.print("After mutation: ");
+			for(int i = 0; i < chromosome.size(); i++)
+			{
+				System.out.print(chromosome.get(i) + " ");
+			}
+			System.out.println();*/
+
             break;
 
 		case 3:		//Displacement mutation
 			ArrayList<Integer> chromo_copy = chromosome;
+			Random rands = new Random();
+			double mut = rands.nextDouble();
+			if(mut >= Parameters.mutationRate)
+			{
+				break;
+			}
 
 			ArrayList<Integer> first_ten = new ArrayList<Integer>();
 			for (int i = 0; i < 10; i++) {
@@ -297,6 +314,13 @@ public class Chromo
 
 		case 1:     //  Cycle crossover
 
+			/*System.out.print("Parent1 before: ");
+			for(int i = 0; i < child1.chromosome.size(); i++)
+			{
+				System.out.print(parent1.chromosome.get(i) + " ");
+			}
+			System.out.println();*/
+
 			// Initalize cycle array
 			ArrayList<Integer> cycle = new ArrayList<Integer>();
 
@@ -306,39 +330,48 @@ public class Chromo
 			// Add point to ArrayLisy
 			cycle.add(xoverPoint1);
 
-
+			ArrayList<Integer> copy_chromo = new ArrayList<Integer>(Collections.nCopies(48, 0));
+			ArrayList<Integer> copy_chromo2 = new ArrayList<Integer>(Collections.nCopies(48, 0));
 			//  Set lists as not to mess with parents
 			for(int i = 0; i<parent1.chromosome.size(); i++)
 			{
-				int p1 = parent1.chromosome.get(i);
-				int p2 = parent2.chromosome.get(i);
-				child1.chromosome.set(i,p1);
-				child2.chromosome.set(i,p2);
+				copy_chromo.set(i, parent1.chromosome.get(i));
+				copy_chromo2.set(i, parent2.chromosome.get(i));
 			}
 			
 
 			// Get point from the same postition from other List
-			xoverPoint2 =  child2.chromosome.get(xoverPoint1);
+			xoverPoint2 =  copy_chromo2.get(xoverPoint1);
 
 			// Get index of the above in child 1
-			xoverPoint1 = child1.chromosome.indexOf(xoverPoint2);
+			xoverPoint1 = copy_chromo.indexOf(xoverPoint2);
 
 			// Fill the cycle list
 			while(xoverPoint1 != cycle.get(0))
 			{
 				cycle.add(xoverPoint1);
-				xoverPoint2 = child2.chromosome.get(xoverPoint1);
-				xoverPoint1 = child1.chromosome.indexOf(xoverPoint2);
+				xoverPoint2 = copy_chromo2.get(xoverPoint1);
+				xoverPoint1 = copy_chromo.indexOf(xoverPoint2);
 			}
 			
 			//Swap the indexes
 			for(int i : cycle)
 			{
-				int hold = child1.chromosome.get(i);
-				child1.chromosome.set(i, child2.chromosome.get(i));
-				child2.chromosome.set(i, hold);
+				int hold = copy_chromo.get(i);
+				copy_chromo.set(i, copy_chromo2.get(i));
+				copy_chromo2.set(i, hold);
 			}
 			
+			child1.chromosome = copy_chromo;
+			child2.chromosome = copy_chromo2;
+
+			/*System.out.print("Parent1 after: ");
+			for(int i = 0; i < child1.chromosome.size(); i++)
+			{
+				System.out.print(parent1.chromosome.get(i) + " ");
+			}
+			System.out.println();*/
+
 			break;
 
 		case 2:		//  PMX
@@ -357,8 +390,14 @@ public class Chromo
 				child1.chromosome.set(i,p1);
 				child2.chromosome.set(i,p2);
 			}*/
-			ArrayList<Integer> copy1 = new ArrayList<Integer>(parent1.chromosome);
-			ArrayList<Integer> copy2 = new ArrayList<Integer>(parent2.chromosome);
+			ArrayList<Integer> copy1 = new ArrayList<Integer>(Collections.nCopies(48, 0));
+			ArrayList<Integer> copy2 = new ArrayList<Integer>(Collections.nCopies(48, 0));
+			//  Set lists as not to mess with parents
+			for(int i = 0; i<parent1.chromosome.size(); i++)
+			{
+				copy1.set(i, parent1.chromosome.get(i));
+				copy2.set(i, parent2.chromosome.get(i));
+			}
 			/*System.out.print("Parent1 post copy: ");
 			for(int i = 0; i<parent1.chromosome.size(); i++)
 			{
@@ -490,6 +529,8 @@ public class Chromo
 			break;
 
 		case 3:     //  Position based
+
+			
 			ArrayList<Integer> child_from_par_2 = new ArrayList<Integer>(Collections.nCopies(48, 0));
 				
 			ArrayList<Integer> parent_2_at_indices = new ArrayList<Integer>(Collections.nCopies(10, 0));

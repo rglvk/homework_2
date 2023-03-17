@@ -58,7 +58,7 @@ public class TravelingSalesman extends FitnessFunction {
             distances_sum += distance(lat1, lat2, lon1, lon2); 
 
         }
-        distances_sum = 100000 - distances_sum;
+        //distances_sum = 100000 - distances_sum;
         return(distances_sum);
     
 
