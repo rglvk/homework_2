@@ -14,6 +14,7 @@ public class Chromo
 *******************************************************************************/
 
 	ArrayList<Integer> chromosome = new ArrayList<Integer>();
+	public static ArrayList<Integer> crossover_indices = new ArrayList<Integer>(Arrays.asList(29, 30, 31, 32, 33, 39, 40, 41, 42, 43));
 	public double rawFitness;
 	public double sclFitness;
 	public double proFitness;
@@ -77,7 +78,7 @@ public class Chromo
 	//  Mutate a Chromosome Based on Mutation Type *****************************
 
 	public void doMutation(){
-
+		
 		switch (Parameters.mutationType){
 
 		case 1:     
@@ -99,11 +100,150 @@ public class Chromo
 
 			break;
 		case 2:
-
-			break;
-		case 3:
 		
-			break;
+			
+			int xoverPoint1;
+			int xoverPoint2;
+			//  Select the mutation points
+            xoverPoint1 = -1;
+            xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+
+			Random randos = new Random();
+			for(int l = 0; l < 48; l++)
+			{
+				double mut = randos.nextDouble();
+				if(mut < Parameters.mutationRate)
+				{
+					xoverPoint1 = l;
+				}
+			}
+
+			if(xoverPoint1 == -1)
+			{
+				break;
+			}
+            // ensures unique points and that point 1 occurs before point 2
+            if (xoverPoint1 == xoverPoint2)
+            {
+                xoverPoint2 = 48-1;
+            }
+            else if (xoverPoint2 < xoverPoint1)
+            {
+                int temp = xoverPoint1;
+                xoverPoint1 = xoverPoint2;
+                xoverPoint2 = temp;
+            }
+            // moves element at point2 next to element at point 1
+            for (int i = xoverPoint2-1; i > xoverPoint1; i--)
+            {
+                int temp; 
+				temp = chromosome.get(i+1);
+                chromosome.set(i+1, chromosome.get(i));
+                chromosome.set(i,temp);
+            }
+
+            break;
+
+		case 3:		//Displacement mutation
+			ArrayList<Integer> chromo_copy = chromosome;
+
+			ArrayList<Integer> first_ten = new ArrayList<Integer>();
+			for (int i = 0; i < 10; i++) {
+				first_ten.add(chromo_copy.get(i));
+				
+			}
+			if (first_ten.size() != 10) {
+				System.out.println("first ten : " + first_ten.size());
+			}
+
+			ArrayList<Integer> second_ten = new ArrayList<Integer>();
+			for (int i = 10; i < 20; i++) {
+		
+				second_ten.add(chromo_copy.get(i));
+				
+			}
+			if (second_ten.size() != 10) {
+				System.out.println("second ten : " + second_ten.size());
+			}
+
+			ArrayList<Integer> third_ten = new ArrayList<Integer>();
+			for (int i = 20; i < 30; i++) {
+				
+				third_ten.add(chromo_copy.get(i));
+				
+			}
+			if (third_ten.size() != 10) {
+				System.out.println("third ten : " + third_ten.size());
+			}
+
+			ArrayList<Integer> last = new ArrayList<Integer>();
+			for (int i = 30; i < 48; i++) {
+				
+				last.add(chromo_copy.get(i));
+				
+			}
+			if (last.size() != 18) {
+				System.out.println("chromo line 117: last " + last.size());
+			}
+
+			
+			
+			
+
+			ArrayList<Integer> new_chromo = new ArrayList<Integer>();
+
+			Random rando = new Random(); 
+			int int_random = rando.nextInt(100);
+
+			if (int_random < 20){
+				new_chromo.addAll(first_ten);
+				new_chromo.addAll(third_ten);
+				new_chromo.addAll(second_ten);
+				new_chromo.addAll(last);
+			} else if (20 <= int_random && int_random < 40){
+				new_chromo.addAll(first_ten);
+				new_chromo.addAll(last);
+				new_chromo.addAll(third_ten);
+				new_chromo.addAll(second_ten);
+				
+			} else if (40 <= int_random && int_random < 60){
+				new_chromo.addAll(second_ten);
+				new_chromo.addAll(first_ten);
+				new_chromo.addAll(third_ten);
+				new_chromo.addAll(last);
+			} else if (60 <= int_random && int_random < 80){
+				new_chromo.addAll(first_ten);
+				new_chromo.addAll(second_ten);
+				new_chromo.addAll(last);
+				new_chromo.addAll(third_ten);
+				
+				
+			} else if (80 <= int_random && int_random < 100){
+				new_chromo.addAll(third_ten);
+				new_chromo.addAll(first_ten);
+				new_chromo.addAll(last);
+				new_chromo.addAll(second_ten);
+				
+			}
+
+
+
+			// new_chromo.addAll(first_ten);
+			// new_chromo.addAll(third_ten);
+			// new_chromo.addAll(second_ten);
+			// new_chromo.addAll(last);
+
+			if (new_chromo.size() != 48){
+				System.out.println("chromo line 138, " + new_chromo.size());
+			}
+			// return(new_chromo);
+			// chromosome = new_chromo;
+			for (int i = 0; i < new_chromo.size(); i ++) {
+				int hold = new_chromo.get(i); // want to avoid using pointers
+				chromo_copy.set(i, hold);
+			}
+			chromosome = chromo_copy;
+		break;
 		default:
 			System.out.println("ERROR - No mutation method selected");
 		}
@@ -203,30 +343,34 @@ public class Chromo
 
 		case 2:		//  PMX
 
-			// arrays to store mappings
-			int[] map1 = new int[48];
-			int[] map2 = new int[48];
-			Arrays.fill(map1, -1);
-			Arrays.fill(map2, -1);
-
+			if(parent1.chromosome == parent2.chromosome)
+				break;
+				
 			//  Select crossover point
 			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
-			//xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
-			if(xoverPoint1 < 45)
-				xoverPoint2 = xoverPoint1 + 3;
-			else
-			{
-				xoverPoint1 = xoverPoint1 - 3;
-				xoverPoint2 = xoverPoint1 + 3;
-			}
+			xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
 
-			for(int i = 0; i<parent1.chromosome.size(); i++)
+			/*for(int i = 0; i<parent1.chromosome.size(); i++)
 			{
 				int p1 = parent1.chromosome.get(i);
 				int p2 = parent2.chromosome.get(i);
 				child1.chromosome.set(i,p1);
 				child2.chromosome.set(i,p2);
+			}*/
+			ArrayList<Integer> copy1 = new ArrayList<Integer>(parent1.chromosome);
+			ArrayList<Integer> copy2 = new ArrayList<Integer>(parent2.chromosome);
+			/*System.out.print("Parent1 post copy: ");
+			for(int i = 0; i<parent1.chromosome.size(); i++)
+			{
+				System.out.print(parent1.chromosome.get(i) + " ");
 			}
+			System.out.println();
+			System.out.print("Parent2 post copy: ");
+			for(int i = 0; i<child1.chromosome.size(); i++)
+			{
+				System.out.print(parent2.chromosome.get(i) + " ");
+			}
+			System.out.println();*/
 
 			// ensures unique points and that point 1 occurs before point 2
 			if (xoverPoint1 == xoverPoint2)
@@ -239,45 +383,79 @@ public class Chromo
 				xoverPoint1 = xoverPoint2;
 				xoverPoint2 = temp;
 			}
-			System.out.println("Points: " + xoverPoint1 + " " + xoverPoint2);
+			//System.out.println("Points: " + xoverPoint1 + " " + xoverPoint2);
 			// swap of xcrossover site
 			for (int i = xoverPoint1; i <= xoverPoint2; i++)
 			{
 				//System.out.println("Swapping " + child1.chromosome.get(i) + " " + child2.chromosome.get(i));
-				child1.chromosome.set(i, parent2.chromosome.get(i));
-				child2.chromosome.set(i, parent1.chromosome.get(i));
-				/*int hold = child1.chromosome.get(i);
-				System.out.println("Before " + child1.chromosome.get(i));
-				child1.chromosome.set(i, child2.chromosome.get(i));
-				System.out.println("After " + child1.chromosome.get(i));
-				child2.chromosome.set(i, hold);*/
+				//child1.chromosome.set(i, parent2.chromosome.get(i));
+				//child2.chromosome.set(i, parent1.chromosome.get(i));
+				int hold = copy1.get(i);
+				//System.out.println("Before " + child1.chromosome.get(i));
+				copy1.set(i, copy2.get(i));
+				//System.out.println("After " + child1.chromosome.get(i));
+				copy2.set(i, hold);
 			}
 
-			//mapping
+			//Set all non swaps to useless value
 			for (int i = 0; i < 48; i++)
 			{
 				if (i < xoverPoint1 || i > xoverPoint2)
 				{
-					int n1 = parent1.chromosome.get(i);
-					int m1 = map1[n1];
-
-					int n2 = parent2.chromosome.get(i);
-					int m2 = map2[n2];
-
-					while (m1 != -1) {
-						n1 = m1;
-						m1 = map1[m1];
+					copy1.set(i, -2);
+					copy2.set(i, -2);
+				}
+			}
+			
+			/*System.out.println("Child 1 before: ");
+			for(int i = 0; i<child1.chromosome.size(); i++)
+			{
+				System.out.print(copy1.get(i) + " ");
+			}
+			System.out.println();
+			System.out.println("Child 2 before: ");
+			for(int i = 0; i<child1.chromosome.size(); i++)
+			{
+				System.out.print(copy2.get(i) + " ");
+			}
+			System.out.println();*/
+			// Repopulate children
+			for (int i = 0; i < 48; i++)
+			{
+				if (i < xoverPoint1 || i > xoverPoint2)
+				{
+					int count = 0;
+					int resert = parent1.chromosome.get(i);
+					while(copy1.contains(resert))
+					{
+						if(count > 10)
+						{
+							
+							break;
+						}
+						
+						int dex = copy1.indexOf(resert);
+						resert = copy2.get(dex);
+						//System.out.println("Stuck in while 1! Resert "+ resert + " Dex " + dex);
+						//count = count + 1;
 					}
+					copy1.set(i,resert);
+					count = 0;
 
-					while (m2 != -1) {
-						n2 = m2;
-						m2 = map2[m2];
+					resert = parent2.chromosome.get(i);
+					while(copy2.contains(resert))
+					{
+						if(count > 10)
+						{
+							
+							break;
+						}
+						int dex = copy2.indexOf(resert);
+						resert = copy1.get(dex);
+						//System.out.println("Stuck in while 2! Resert "+ resert + " Dex " + dex);
+						//count = count + 1;
 					}
-					
-					//System.out.println("Before: " + child1.chromosome.get(i));
-					child1.chromosome.set(i,n1);
-					//System.out.println("After: " + child1.chromosome.get(i));
-					child2.chromosome.set(i,n2);
+					copy2.set(i,resert);
 
 				}
 			}
@@ -292,23 +470,143 @@ public class Chromo
 			{
 				System.out.print(parent2.chromosome.get(i) + " ");
 			}
-			System.out.println("\n");
-			System.out.print("Child1: ");
-			for(int i = 0; i<child1.chromosome.size(); i++)
+			System.out.println("\n"); 
+			System.out.print("Child1 After: ");
+			for(int i = 0; i<copy1.size(); i++)
 			{
-				System.out.print(child1.chromosome.get(i) + " ");
+				System.out.print(copy1.get(i) + " ");
 			}
 			System.out.println();
 			
 			System.out.print("Child2: ");
-			for(int i = 0; i<child2.chromosome.size(); i++)
+			for(int i = 0; i<copy2.size(); i++)
 			{
-				System.out.print(child2.chromosome.get(i) + " ");
+				System.out.print(copy2.get(i) + " ");
 			}
 			System.out.println();*/
+
+			child1.chromosome = copy1;
+			child2.chromosome = copy2;
 			break;
 
-		case 3:     //  Uniform Crossover
+		case 3:     //  Position based
+			ArrayList<Integer> child_from_par_2 = new ArrayList<Integer>(Collections.nCopies(48, 0));
+				
+			ArrayList<Integer> parent_2_at_indices = new ArrayList<Integer>(Collections.nCopies(10, 0));
+			for (int i = 0; i < 10; i++) {
+				parent_2_at_indices.set(i, parent2.chromosome.get(crossover_indices.get(i)));
+			}
+			
+			ArrayList<Integer> parent_1_not_in_crossover = new ArrayList<Integer>(Collections.nCopies(48, 888));
+
+			for (int p = 0; p < 48; p++) {
+				if (!(parent_2_at_indices.contains(parent1.chromosome.get(p)))) {
+					parent_1_not_in_crossover.set(p, parent1.chromosome.get(p));
+				}
+			}
+			parent_1_not_in_crossover.removeAll(Arrays.asList(888));
+		
+
+			ListIterator<Integer> iterator = parent_1_not_in_crossover.listIterator();
+			
+			for (int i = 0; i < 29; i++) {
+				
+				child_from_par_2.set(i, iterator.next());
+				
+
+			}
+
+			for (int i = 29; i < 34; i++) {
+				child_from_par_2.set(i, parent_2_at_indices.get(i - 29));
+			}
+
+			for (int i = 34; i < 39; i++) {
+				child_from_par_2.set(i, iterator.next());
+			}
+
+			for (int i = 39; i < 44; i++) {
+				child_from_par_2.set(i, parent_2_at_indices.get(i - 34));
+			}
+
+			// System.out.println("chromo line 366, child_from_par_1 size : " + child_from_par_1.size());
+			// System.out.println("chromo line 271, child_from_par_2 size : " + child_from_par_2.size());
+
+			for (int i = 44; i < 48; i++) {
+				int hello = iterator.next();
+			
+				child_from_par_2.set(i, hello);
+			}         
+
+	// now doing child_from_par_1:
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+	// CHILD_FROM_PAR_1 :
+
+			ArrayList<Integer> child_from_par_1 = new ArrayList<Integer>(Collections.nCopies(48, 0));
+
+			ArrayList<Integer> parent_1_at_indices = new ArrayList<Integer>(Collections.nCopies(10, 0));
+			for (int i = 0; i < 10; i++) {
+				parent_1_at_indices.set(i, parent1.chromosome.get(crossover_indices.get(i)));
+			}
+			
+			ArrayList<Integer> parent_2_not_in_crossover = new ArrayList<Integer>(Collections.nCopies(48, 888));
+
+			for (int p = 0; p < 48; p++) {
+				if (!(parent_1_at_indices.contains(parent2.chromosome.get(p)))) {
+					parent_2_not_in_crossover.set(p, parent2.chromosome.get(p));
+					// System.out.println("chromo line 306 : " + parent_2_not_in_crossover.size());
+				}
+			}
+			parent_2_not_in_crossover.removeAll(Arrays.asList(888));
+				
+			
+			
+
+			ListIterator<Integer> second_iterator = parent_2_not_in_crossover.listIterator();
+			
+			for (int i = 0; i < 29; i++) {
+				
+				child_from_par_1.set(i, second_iterator.next());
+				
+
+			}
+
+			for (int i = 29; i < 34; i++) {
+				child_from_par_1.set(i, parent_1_at_indices.get(i - 29));
+			}
+
+			for (int i = 34; i < 39; i++) {
+				child_from_par_1.set(i, second_iterator.next());
+				
+			}
+
+			for (int i = 39; i < 44; i++) {
+				child_from_par_1.set(i, parent_1_at_indices.get(i - 34));
+			}
+			// System.out.println("chromo line 332, child_from_par_1 size : " + child_from_par_1.size());
+			// System.out.println("chromo line 333, child_from_par_2 size : " + child_from_par_2.size());
+
+			for (int i = 44; i < 48; i++) {
+				int hello_two = second_iterator.next();
+				
+				child_from_par_1.set(i, hello_two);
+				
+			}
+		
+
+
+
+		System.out.println("chromo line 287, child_from_par_1 size : " + child_from_par_1.size());
+		System.out.println("chromo line 288, child_from_par_2 size : " + child_from_par_2.size() + "\n");
+
+		child1.chromosome = child_from_par_1;
+		child2.chromosome = child_from_par_2;
+		
+		break;
 
 		default:
 			System.out.println("ERROR - Bad crossover method selected: " + Parameters.xoverType);
