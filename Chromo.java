@@ -74,23 +74,43 @@ public class Chromo
 
 	public void doMutation(){
 
-		switch (Parameters.mutationType){
+        int xoverPoint1;
+        int xoverPoint2;
 
-		case 1:     
+        switch (Parameters.mutationType){
 
-			
-			break;
-		case 2:
+        // insertion mutation
+        case 1: 
+            //  Select crossover point
+            xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+            xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
 
-			break;
-		case 3:
-		
-			break;
-		default:
-			System.out.println("ERROR - No mutation method selected");
-		}
-	}
+            // ensures unique points and that point 1 occurs before point 2
+            if (xoverPoint1 == xoverPoint2)
+            {
+                xoverPoint2 = 48-1;
+            }
+            else if (xoverPoint2 < xoverPoint1)
+            {
+                int temp = xoverPoint1;
+                xoverPoint1 = xoverPoint2;
+                xoverPoint2 = temp;
+            }
 
+            // moves element at point2 next to element at point 1
+            for (int i = xoverPoint2-1; i > xoverPoint1; i--)
+            {
+                int temp = chromosome.get(i+1);
+                chromosome.set(i+1, chromosome.get(i));
+                chromosome.set(i,temp);
+            }
+
+            break;
+
+        default:
+            System.out.println("ERROR - No mutation method selected");
+        }
+    }
 /*******************************************************************************
 *                             STATIC METHODS                                   *
 *******************************************************************************/
@@ -135,13 +155,106 @@ public class Chromo
 
 		switch (Parameters.xoverType){
 
-		case 1:     //  Single Point Crossover
+		case 1:     //  PMX
+
+			// arrays to store mappings
+			ArrayList <Integer> map1 = new ArrayList<Integer>(48);
+			ArrayList <Integer> map2 = new ArrayList<Integer>(48);
+			
+			for (int i = 0; i < 48; i++)
+			{
+				map1.add(-1);
+				map2.add(-1);
+			}
+
 
 			//  Select crossover point
 			xoverPoint1 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+			xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
 
-			//  Create child chromosome from parental material
-			
+			// ensures unique points and that point 1 occurs before point 2
+			if (xoverPoint1 == xoverPoint2)
+			{
+				if (xoverPoint1 > 1 && xoverPoint1 < 48)
+				{
+					xoverPoint1 = xoverPoint1-1;
+					xoverPoint2 = xoverPoint1+1;
+				}
+				else {
+					xoverPoint1 = 13;
+					xoverPoint2 = 18;
+				}
+			}
+			else if (xoverPoint2 < xoverPoint1)
+			{
+				int temp = xoverPoint1;
+				xoverPoint1 = xoverPoint2;
+				xoverPoint2 = temp;
+			}
+
+			// swap of xcrossover site
+			for (int i = xoverPoint1; i <= xoverPoint2; i++)
+			{
+				child1.chromosome.set(i, parent2.chromosome.get(i));
+				child2.chromosome.set(i, parent1.chromosome.get(i));
+
+				map1.set(parent2.chromosome.get(i),parent1.chromosome.get(i));
+				map2.set(parent1.chromosome.get(i),parent2.chromosome.get(i));
+			}
+
+			// populate map with parent if not already present
+			for (int i = 0; i < 48; i++)
+			{
+				if (i < xoverPoint1 || i > xoverPoint2)
+				{
+					if (!map1.contains(parent1.chromosome.get(i)))
+					{
+						map1.set(i,parent1.chromosome.get(i));
+					}
+
+					if (!map2.contains(parent2.chromosome.get(i)))
+					{
+						map2.set(i,parent2.chromosome.get(i));
+					}
+				}
+
+			}
+
+			//mapping, i is index 
+			for (int i = 0; i < 48; i++)
+			{
+				// if outside of the xover region
+				if (i < xoverPoint1 || i > xoverPoint2)
+				{
+					// n1 is city at index i in parent 1
+					// m1 is mapping of index n1
+					int n1 = parent1.chromosome.get(i);
+					int m1 = map1.get(n1);
+
+					int n2 = parent2.chromosome.get(i);
+					int m2 = map2.get(n2);
+
+					for (int j = 0; j < 48; j++) 
+					{
+						if (m1 != -1) {
+						n1 = m1;
+						m1 = map1.get(m1);
+						}
+					}
+
+					for (int j = 0; j < 48; j++) 
+					{
+						if (m2 != -1) {
+						n2 = m2;
+						m2 = map2.get(m2);
+						}
+					}
+
+					child1.chromosome.set(i,n1);
+					child2.chromosome.set(i,n2);
+				}
+			}
+				
 			break;
 
 		case 2:     //  Two Point Crossover
