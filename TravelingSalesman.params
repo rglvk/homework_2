@@ -6,9 +6,9 @@ Generations per Run          :3000
 Population Size              :400
 Selection Method (1)         :1
 Fitness Scaling Type (2)     :1
-Crossover Type (3)           :2
+Crossover Type (3)           :3
 Crossover Rate (4)           :0.05
-Mutation Type (5)            :3
+Mutation Type (5)            :1
 Mutation Rate (6)            :0.005
 Random Number Seed           :75982
 Number of Genes/Points (7)   :48

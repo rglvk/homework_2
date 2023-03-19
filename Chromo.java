@@ -83,7 +83,19 @@ public class Chromo
 
 		case 1:     
 			//Possibly set this to occur only once per generation?
+			/*System.out.print("Before mutation: ");
+			for(int i = 0; i < chromosome.size(); i++)
+			{
+				System.out.print(chromosome.get(i) + " ");
+			}*/
+			//System.out.println();
 			Random rand = new Random();
+			ArrayList<Integer> copy_chromotest = new ArrayList<Integer>(Collections.nCopies(48, 0));
+			//  Set lists as not to mess with parents
+			for(int i = 0; i<chromosome.size(); i++)
+			{
+				copy_chromotest.set(i, chromosome.get(i));
+			}
 			for(int l = 0; l < 48; l++)
 			{
 				double mut = rand.nextDouble();
@@ -94,9 +106,17 @@ public class Chromo
 					{
 						swapIndex = rand.nextInt(48);
 					}
-					Collections.swap(chromosome, l, swapIndex);
+					Collections.swap(copy_chromotest, l, swapIndex);
 				}
 			}
+			chromosome = copy_chromotest;
+
+			/*System.out.print("After mutation: ");
+			for(int i = 0; i < chromosome.size(); i++)
+			{
+				System.out.print(chromosome.get(i) + " ");
+			}
+			System.out.println();*/
 
 			break;
 		case 2:
@@ -111,6 +131,13 @@ public class Chromo
 			//  Select the mutation points
             xoverPoint1 = -1;
             xoverPoint2 = 1 + (int)(Search.r.nextDouble() * (Parameters.numGenes * Parameters.geneSize-1));
+
+			ArrayList<Integer> copy_chromotest2 = new ArrayList<Integer>(Collections.nCopies(48, 0));
+			//  Set lists as not to mess with parents
+			for(int i = 0; i<chromosome.size(); i++)
+			{
+				copy_chromotest2.set(i, chromosome.get(i));
+			}
 
 			Random randos = new Random();
 			for(int l = 0; l < 48; l++)
@@ -141,9 +168,9 @@ public class Chromo
             for (int i = xoverPoint2-1; i > xoverPoint1; i--)
             {
                 int temp; 
-				temp = chromosome.get(i+1);
-                chromosome.set(i+1, chromosome.get(i));
-                chromosome.set(i,temp);
+				temp = copy_chromotest2.get(i+1);
+                copy_chromotest2.set(i+1, copy_chromotest2.get(i));
+                copy_chromotest2.set(i,temp);
             }
 
 			/*System.out.print("After mutation: ");
@@ -153,6 +180,7 @@ public class Chromo
 			}
 			System.out.println();*/
 
+			chromosome = copy_chromotest2;
             break;
 
 		case 3:		//Displacement mutation
