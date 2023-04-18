@@ -87,8 +87,8 @@ public class Chromo
 			for(int i = 0; i < chromosome.size(); i++)
 			{
 				System.out.print(chromosome.get(i) + " ");
-			}*/
-			//System.out.println();
+			}
+			System.out.println();*/
 			Random rand = new Random();
 			ArrayList<Integer> copy_chromotest = new ArrayList<Integer>(Collections.nCopies(48, 0));
 			//  Set lists as not to mess with parents
@@ -101,12 +101,60 @@ public class Chromo
 				double mut = rand.nextDouble();
 				if(mut < Parameters.mutationRate)
 				{
-					int swapIndex = rand.nextInt(48);
-					while (swapIndex == l)
+					int startIndex = rand.nextInt(48);
+					int endIndex = rand.nextInt(48);
+					if(startIndex == endIndex)
 					{
-						swapIndex = rand.nextInt(48);
+						if(startIndex == 0)
+							endIndex = endIndex + 1;
+						else
+							startIndex = startIndex - 1; 
 					}
-					Collections.swap(copy_chromotest, l, swapIndex);
+					if(startIndex > endIndex)
+					{
+						int h = endIndex;
+						endIndex = startIndex;
+						startIndex = h;
+					}
+					//System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
+					int subsetSize = endIndex-startIndex;
+					List<Integer> subset = new ArrayList<>();
+    				for (int i = 0; i < subsetSize; i++) 
+					{
+        				int index = (startIndex + i) % copy_chromotest.size();
+       					subset.add(copy_chromotest.get(index));
+    				}
+					List<Integer> sortedSubset = new ArrayList<>(subset);
+					for(int x = startIndex; x < subsetSize-1; x++)
+					{
+						double minDistance = Double.MAX_VALUE;
+        				int minIndex = -1;
+						for(int y = x + 1; y < subsetSize; y ++)
+						{
+							int c1Index = subset.get(x);
+							int c2Index = subset.get(y);
+							double lat1 = lat_array.get(c1Index);
+							double lng1 = long_array.get(c1Index);
+							double lat2 = lat_array.get(c2Index);
+							double lng2 = long_array.get(c2Index);
+							double dis = distance_chromo(lat1, lat2, lng1, lng2);
+							if (dis < minDistance) 
+							{
+								minDistance = dis;
+								minIndex = y;
+							}
+						}
+						if (minIndex != -1) 
+						{
+							int temp = sortedSubset.get(x + 1);
+							sortedSubset.set(x + 1, sortedSubset.get(minIndex));
+							sortedSubset.set(minIndex, temp);
+						}
+					}
+					for (int i = 0; i < subsetSize; i++) {
+						int index = (startIndex + i) % copy_chromotest.size();
+						copy_chromotest.set(index, sortedSubset.get(i));
+					}
 				}
 			}
 			chromosome = copy_chromotest;
@@ -714,4 +762,28 @@ public class Chromo
 		targetA.proFitness = sourceB.proFitness;
 		return;
 	}
+
+	//This is here so we can do GSTM inside chromo. It is the same as our fitness function.
+	public static double distance_chromo(double lat1, double lat2, double lon1, double lon2){
+        // convert to radians
+        double nlon1 = Math.toRadians(lon1);
+        double nlon2 = Math.toRadians(lon2);
+        double nlat1 = Math.toRadians(lat1);
+        double nlat2 = Math.toRadians(lat2);
+        // distance
+        // Haversine formula
+        double dlon = nlon2 - nlon1;
+        double dlat = nlat2 - nlat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(nlat1) * Math.cos(nlat2) * Math.pow(Math.sin(dlon / 2),2);
+    
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+
+        // calculate the result
+        //System.out.println("Distance between " + lat1 + " " + lon1 + " and " + lat2 + " " + lon2 + " is: " + c*r);
+        return(c * r);
+    }
 }   // End of Chromo.java ******************************************************
