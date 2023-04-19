@@ -87,7 +87,7 @@ public class Chromo
 			for(int i = 0; i < chromosome.size(); i++)
 			{
 				System.out.print(chromosome.get(i) + " ");
-			}
+			} 
 			System.out.println();*/
 			Random rand = new Random();
 			ArrayList<Integer> copy_chromotest = new ArrayList<Integer>(Collections.nCopies(48, 0));
@@ -116,7 +116,7 @@ public class Chromo
 						endIndex = startIndex;
 						startIndex = h;
 					}
-					//System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
+					System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
 					int subsetSize = endIndex-startIndex;
 					List<Integer> subset = new ArrayList<>();
     				for (int i = 0; i < subsetSize; i++) 
@@ -167,13 +167,235 @@ public class Chromo
 			System.out.println();*/
 
 			break;
-		case 2:
+
+		case 2: //Length 4
+		/*System.out.print("Before mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+		Random rand2 = new Random();
+		ArrayList<Integer> copy_chromo = new ArrayList<Integer>(Collections.nCopies(48, 0));
+		//  Set lists as not to mess with parents
+		for(int i = 0; i<chromosome.size(); i++)
+		{
+			copy_chromo.set(i, chromosome.get(i));
+		}
+		for(int l = 0; l < 48; l++)
+		{
+			double mut = rand2.nextDouble();
+			if(mut < Parameters.mutationRate)
+			{
+				int startIndex = rand2.nextInt(44);
+				int endIndex = startIndex + 4;
+				
+				//System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
+				int subsetSize = endIndex-startIndex;
+				List<Integer> subset = new ArrayList<>();
+				for (int i = 0; i < subsetSize; i++) 
+				{
+					int index = (startIndex + i) % copy_chromo.size();
+					   subset.add(copy_chromo.get(index));
+				}
+				List<Integer> sortedSubset = new ArrayList<>(subset);
+				for(int x = startIndex; x < subsetSize-1; x++)
+				{
+					double minDistance = Double.MAX_VALUE;
+					int minIndex = -1;
+					for(int y = x + 1; y < subsetSize; y ++)
+					{
+						int c1Index = subset.get(x);
+						int c2Index = subset.get(y);
+						double lat1 = lat_array.get(c1Index);
+						double lng1 = long_array.get(c1Index);
+						double lat2 = lat_array.get(c2Index);
+						double lng2 = long_array.get(c2Index);
+						double dis = distance_chromo(lat1, lat2, lng1, lng2);
+						if (dis < minDistance) 
+						{
+							minDistance = dis;
+							minIndex = y;
+						}
+					}
+					if (minIndex != -1) 
+					{
+						int temp = sortedSubset.get(x + 1);
+						sortedSubset.set(x + 1, sortedSubset.get(minIndex));
+						sortedSubset.set(minIndex, temp);
+					}
+				}
+				for (int i = 0; i < subsetSize; i++) {
+					int index = (startIndex + i) % copy_chromo.size();
+					copy_chromo.set(index, sortedSubset.get(i));
+				}
+			}
+		}
+		chromosome = copy_chromo;
+
+		/*System.out.print("After mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+
+		break;
+
+		case 3: //Length 8
+		/*System.out.print("Before mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+		Random rand3 = new Random();
+		ArrayList<Integer> copy_chromod = new ArrayList<Integer>(Collections.nCopies(48, 0));
+		//  Set lists as not to mess with parents
+		for(int i = 0; i<chromosome.size(); i++)
+		{
+			copy_chromod.set(i, chromosome.get(i));
+		}
+		for(int l = 0; l < 48; l++)
+		{
+			double mut = rand3.nextDouble();
+			if(mut < Parameters.mutationRate)
+			{
+				int startIndex = rand3.nextInt(40);
+				int endIndex = startIndex + 8;
+				
+				//System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
+				int subsetSize3 = endIndex-startIndex;
+				List<Integer> subset = new ArrayList<>();
+				for (int i = 0; i < subsetSize3; i++) 
+				{
+					int index = (startIndex + i) % copy_chromod.size();
+					   subset.add(copy_chromod.get(index));
+				}
+				List<Integer> sortedSubset = new ArrayList<>(subset);
+				for(int x = startIndex; x < subsetSize3-1; x++)
+				{
+					double minDistance = Double.MAX_VALUE;
+					int minIndex = -1;
+					for(int y = x + 1; y < subsetSize3; y ++)
+					{
+						int c1Index = subset.get(x);
+						int c2Index = subset.get(y);
+						double lat1 = lat_array.get(c1Index);
+						double lng1 = long_array.get(c1Index);
+						double lat2 = lat_array.get(c2Index);
+						double lng2 = long_array.get(c2Index);
+						double dis = distance_chromo(lat1, lat2, lng1, lng2);
+						if (dis < minDistance) 
+						{
+							minDistance = dis;
+							minIndex = y;
+						}
+					}
+					if (minIndex != -1) 
+					{
+						int temp = sortedSubset.get(x + 1);
+						sortedSubset.set(x + 1, sortedSubset.get(minIndex));
+						sortedSubset.set(minIndex, temp);
+					}
+				}
+				for (int i = 0; i < subsetSize3; i++) {
+					int index = (startIndex + i) % copy_chromod.size();
+					copy_chromod.set(index, sortedSubset.get(i));
+				}
+			}
+		}
+		chromosome = copy_chromod;
+
+		/*System.out.print("After mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+
+		break;
+
+		case 4: //Length 16
+		/*System.out.print("Before mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+		Random rand4 = new Random();
+		ArrayList<Integer> copy_chrood = new ArrayList<Integer>(Collections.nCopies(48, 0));
+		//  Set lists as not to mess with parents
+		for(int i = 0; i<chromosome.size(); i++)
+		{
+			copy_chrood.set(i, chromosome.get(i));
+		}
+		for(int l = 0; l < 48; l++)
+		{
+			double mut = rand4.nextDouble();
+			if(mut < Parameters.mutationRate)
+			{
+				int startIndex = rand4.nextInt(32);
+				int endIndex = startIndex + 16;
+				
+				//System.out.println("Doing mutation. Sdex: " + startIndex + " Edex: " + endIndex);
+				int subsetSize4 = endIndex-startIndex;
+				List<Integer> subset4 = new ArrayList<>();
+				for (int i = 0; i < subsetSize4; i++) 
+				{
+					int index = (startIndex + i) % copy_chrood.size();
+					   subset4.add(copy_chrood.get(index));
+				}
+				List<Integer> sortedSubset4 = new ArrayList<>(subset4);
+				for(int x = startIndex; x < subsetSize4-1; x++)
+				{
+					double minDistance = Double.MAX_VALUE;
+					int minIndex = -1;
+					for(int y = x + 1; y < subsetSize4; y ++)
+					{
+						int c1Index = subset4.get(x);
+						int c2Index = subset4.get(y);
+						double lat1 = lat_array.get(c1Index);
+						double lng1 = long_array.get(c1Index);
+						double lat2 = lat_array.get(c2Index);
+						double lng2 = long_array.get(c2Index);
+						double dis = distance_chromo(lat1, lat2, lng1, lng2);
+						if (dis < minDistance) 
+						{
+							minDistance = dis;
+							minIndex = y;
+						}
+					}
+					if (minIndex != -1) 
+					{
+						int temp = sortedSubset4.get(x + 1);
+						sortedSubset4.set(x + 1, sortedSubset4.get(minIndex));
+						sortedSubset4.set(minIndex, temp);
+					}
+				}
+				for (int i = 0; i < subsetSize4; i++) {
+					int index = (startIndex + i) % copy_chrood.size();
+					copy_chrood.set(index, sortedSubset4.get(i));
+				}
+			}
+		}
+		chromosome = copy_chrood;
+
+		/*System.out.print("After mutation: ");
+		for(int i = 0; i < chromosome.size(); i++)
+		{
+			System.out.print(chromosome.get(i) + " ");
+		}
+		System.out.println();*/
+
+		break;
+		/*case 4:
 			/*System.out.print("Before mutation: ");
 			for(int i = 0; i < chromosome.size(); i++)
 			{
 				System.out.print(chromosome.get(i) + " ");
 			}
-			System.out.println();*/
+			System.out.println();
 			int xoverPoint1;
 			int xoverPoint2;
 			//  Select the mutation points
@@ -226,12 +448,12 @@ public class Chromo
 			{
 				System.out.print(chromosome.get(i) + " ");
 			}
-			System.out.println();*/
+			System.out.println();
 
 			chromosome = copy_chromotest2;
             break;
 
-		case 3:		//Displacement mutation
+		case 5:		//Displacement mutation
 			ArrayList<Integer> chromo_copy = chromosome;
 			Random rands = new Random();
 			double mut = rands.nextDouble();
@@ -239,7 +461,7 @@ public class Chromo
 			{
 				break;
 			}
-
+			System.out.println("Hey I'm running when I'm not supposed to! But case 6!");
 			ArrayList<Integer> first_ten = new ArrayList<Integer>();
 			for (int i = 0; i < 10; i++) {
 				first_ten.add(chromo_copy.get(i));
@@ -336,7 +558,7 @@ public class Chromo
 				chromo_copy.set(i, hold);
 			}
 			chromosome = chromo_copy;
-		break;
+		break; */
 		default:
 			System.out.println("ERROR - No mutation method selected");
 		}
